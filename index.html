@@ -175,3 +175,125 @@
             </article>
             <article class="card" data-cuisine="American" data-price="$" data-rating="8">
               <div class="meta"><span class="pill">American</span><span>8/10</span
+          <h3>Crimson Coward Nashville Hot Chicken | Columbia, MD</h3>
+              <p>
+             I got “the Crimson” chicken sandwich with a mild heat level with a scoop of fries. The sandwich came with a sauce on the side that resembled the Cane’s sauce, but less salty. In total it was $15. I would say the sandwich is better than the Dave’s Hot Chicken sandwich, which has an odd spice that covers the chicken. This sandwich was perfectly crispy and juicy. The fries were a let down though. I prefer Hangry Joe’s waffle fries, which are seasoned properly.
+              </p>
+            </article>  
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Elements
+      const searchInput = document.getElementById('searchInput');
+      const priceSelect = document.getElementById('priceSelect');
+      const ratingSelect = document.getElementById('ratingSelect');
+      const resetBtn = document.getElementById('resetBtn');
+      const countEl = document.getElementById('count');
+      const cards = Array.from(document.querySelectorAll('#reviewsGrid .card'));
+
+      // State (rating now 1–10)
+      const state = {
+         q: '',
+        price: '',
+        minRating: 0 // 0..10
+      };
+
+      // --- Fuzzy matching helpers ---
+      function editDistance(a, b) {
+        a = a.toLowerCase(); b = b.toLowerCase();
+        const m = a.length, n = b.length;
+        const dp = Array.from({length: m+1}, () => new Array(n+1).fill(0));
+        for (let i = 0; i <= m; i++) dp[i][0] = i;
+        for (let j = 0; j <= n; j++) dp[0][j] = j;
+        for (let i = 1; i <= m; i++) {
+          for (let j = 1; j <= n; j++) {
+            const cost = a[i-1] === b[j-1] ? 0 : 1;
+            dp[i][j] = Math.min(
+              dp[i-1][j] + 1,
+              dp[i][j-1] + 1,
+              dp[i-1][j-1] + cost
+            );
+          }
+        }
+        return dp[m][n];
+      }
+
+      function fuzzyMatch(query, text) {
+        if (!query) return true;
+        text = text.toLowerCase();
+        const words = text.split(/[^a-z0-9]+/).filter(Boolean);
+        const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
+         return tokens.every(tok => {
+          if (text.includes(tok)) return true;
+          const thresh = tok.length <= 4 ? 1 : 2;
+          for (const w of words) {
+            if (Math.abs(w.length - tok.length) > thresh) continue;
+            if (editDistance(tok, w) <= thresh) return true;
+          }
+          return false;
+        });
+      }
+
+      // Debounce
+      function debounce(fn, ms) {
+        let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+      }
+
+      // Listeners
+      searchInput.addEventListener('input', debounce(() => {
+        state.q = searchInput.value.trim();
+        applyFilters();
+      }, 120));
+
+      priceSelect.addEventListener('change', () => {
+        state.price = priceSelect.value;
+        applyFilters();
+      });
+
+      ratingSelect.addEventListener('change', () => {
+        state.minRating = parseFloat(ratingSelect.value || '0');
+        applyFilters();
+      });
+
+      resetBtn.addEventListener('click', () => {
+         state.q = '';
+        state.price = '';
+        state.minRating = 0;
+
+        searchInput.value = '';
+        priceSelect.value = '';
+        ratingSelect.value = '0';
+        applyFilters();
+      });
+
+      function applyFilters() {
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const price = card.dataset.price;
+          const rating = parseFloat(card.dataset.rating);
+          const text = (
+            card.querySelector('h3').textContent + ' ' +
+            card.querySelector('p').textContent
+          ).toLowerCase();
+
+          const keywordOK = fuzzyMatch(state.q, text);
+          const priceOK = !state.price || price === state.price;
+          const ratingOK = rating >= state.minRating;
+
+          const show = keywordOK && priceOK && ratingOK;
+          card.style.display = show ? '' : 'none';
+          if (show) visibleCount++;
+        });
+
+        countEl.textContent = `${visibleCount} result${visibleCount === 1 ? '' : 's'}`;
+      }
+
+      // Initial count
+      applyFilters();
+    </script>
+  </body>
+</html>
