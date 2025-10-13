@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Food Reviews</title>
+    <style>
+      body {
+        background-color: #D2042D;
+        font-family: Poppins, sans-serif;
+        margin: 0;
+      }
+      .container {
+        width: 700px;
+        display: flex;
+        flex-direction: column;
+        margin: 32px auto;
+      }
+      .tabs { display: flex; gap: 20px; }
+      input { display: none; }
+      label { cursor: pointer; }
+      .tab-name {
+        color: white;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.25);
+        padding: 10px 30px;
+        border-radius: 5px;
+        transition: background 0.3s;
+        display: inline-block;
+      }
+      #tab1:checked ~ .tabs label[for="tab1"] .tab-name,
+      #tab2:checked ~ .tabs label[for="tab2"] .tab-name {
+        background: rgb(243, 240, 58);
+        color: black;
+      }
+      .tab-contents {
+        margin-top: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      .tab-content { display: none; }
+      #tab1:checked ~ .tab-contents #content1 { display: block; }
+      #tab2:checked ~ .tab-contents #content2 { display: block; }
+
+      .filters {
+        display: grid;
+        grid-template-columns: 1fr 150px 150px auto;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 16px;
+        position: sticky;
+        top: 0;
+        background: white;
+        padding: 8px 0;
+        z-index: 1;
+      }
+      .filter-group { display: flex; flex-direction: column; gap: 6px; }
+      .filter-label { font-size: 12px; color: #555; }
+      .select, .input {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        background: #fff;
+      }
+      .filter-actions { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+      .reset {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        background: #f8f8f8;
+        cursor: pointer;
+      }
+      .count { font-size: 12px; color: #666; }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .card {
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 14px;
+        transition: box-shadow .2s ease;
+      }
+      .card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+      .meta { display: flex; gap: 8px; align-items: center; font-size: 12px; color: #555; margin-bottom: 6px; }
+      .pill { padding: 2px 8px; border: 1px solid #ddd; border-radius: 999px; }
+
+      @media (max-width: 720px) {
+        .container { width: 92vw; }
+        .filters { grid-template-columns: 1fr 1fr; }
+        .grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Hidden radios must come BEFORE the content they control -->
+      <input type="radio" name="option" id="tab1" checked />
+      <input type="radio" name="option" id="tab2" />
+
+      <!-- Tabs row (labels only) -->
+      <div class="tabs">
+        <label for="tab1"><div class="tab-name">Home</div></label>
+        <label for="tab2"><div class="tab-name">Reviews</div></label>
+      </div>
+
+      <!-- Contents -->
+      <div class="tab-contents">
+        <div class="tab-content" id="content1">
+          <h2>Welcome to my Website!</h2>
+          <h3>Here are the types of cuisines I enjoy</h3>
+          <ul>
+            <li>Thai</li>
+            <li>Indian</li>
+            <li>Mexican</li>
+          </ul>
+          <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3Vremh4ZmN3a2V5eDYyOWN2ZW9zcnZ0bHZhMG1ncTc2eWR1c2N0bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/97ZWlB7ENlalq/giphy.gif" width="300" height="300" alt="food gif">
+          <p>On my website I will be posting food reviews of restaurants I’ve been to!</p>
+          <p>I hope you enjoy my website :)</p>
+        </div>
+
+        <div class="tab-content" id="content2">
+          <!-- FILTER BAR -->
+          <div class="filters">
+            <!-- Search -->
+            <div class="filter-group">
+              <label for="searchInput" class="filter-label">Search reviews (fuzzy)</label>
+              <input id="searchInput" class="input" type="text" placeholder="Try: 'biryani', 'Columbia', 'waffle fries'…" />
+            </div>
+
+            <!-- Price -->
+            <div class="filter-group">
+              <label for="priceSelect" class="filter-label">Price</label>
+              <select id="priceSelect" class="select">
+                <option value="">Any</option>
+                <option value="$">$</option>
+                <option value="$$">$$</option>
+                <option value="$$$">$$$</option>
+              </select>
+            </div>
+
+            <!-- Rating: MIN (1–10) -->
+            <div class="filter-group">
+              <label for="ratingSelect" class="filter-label">Min Rating (1–10)</label>
+              <select id="ratingSelect" class="select">
+                <option value="0">Any</option>
+                <option value="1">1+</option>
+                <option value="2">2+</option>
+                <option value="3">3+</option>
+                <option value="4">4+</option>
+                <option value="5">5+</option>
+                <option value="6">6+</option>
+                <option value="7">7+</option>
+                <option value="8">8+</option>
+                <option value="9">9+</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+
+            <div class="filter-actions">
+              <button id="resetBtn" class="reset">Reset</button>
+              <span id="count" class="count"></span>
+            </div>
+          </div>
+
+          <!-- REVIEWS GRID -->
+          <div id="reviewsGrid" class="grid">
+            
+
+            <!-- Pelicana (no visual $$ badge; data-price is "$$") -->
+            <article class="card" data-cuisine="Korean" data-price="$$" data-rating="9">
+              <div class="meta"><span class="pill">Korean</span><span>9/10</span></div>
+              <h3>Pelicana Chicken | Rockville, MD</h3>
+              <p>
+                I got the fried chicken which was soy garlic flavor, vegetable bibimbap, and rose tteokboki. The fried chicken was extremely crispy and the flavor was perfect. The bibimbap was pretty dull in comparison, it didn’t have much flavor. It came with a gochujang sauce on the side, but it really did not add much and the flavor wasn’t my favorite. The vegetables had no seasoning, which made dish boring to eat. The rose tteokboki was my favorite, the rice cakes were soft and slightly chewy (the perfect texture), the fish cakes didn’t have much of a taste, and the rose sauce was the perfect sweet and salty combo. I added cheese and ramen to the dish which really perfected it. The tteokboki was $18, fried chicken was $18, and the bibimbap was around $15. 
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Elements
+      const searchInput = document.getElementById('searchInput');
+      const priceSelect = document.getElementById('priceSelect');
+      const ratingSelect = document.getElementById('ratingSelect');
+      const resetBtn = document.getElementById('resetBtn');
+      const countEl = document.getElementById('count');
+      const cards = Array.from(document.querySelectorAll('#reviewsGrid .card'));
+
+      // State (rating now 1–10)
+      const state = {
+        q: '',
+        price: '',
+        minRating: 0 // 0..10
+      };
+
+      // --- Fuzzy matching helpers ---
+      function editDistance(a, b) {
+        a = a.toLowerCase(); b = b.toLowerCase();
+        const m = a.length, n = b.length;
+        const dp = Array.from({length: m+1}, () => new Array(n+1).fill(0));
+        for (let i = 0; i <= m; i++) dp[i][0] = i;
+        for (let j = 0; j <= n; j++) dp[0][j] = j;
+        for (let i = 1; i <= m; i++) {
+          for (let j = 1; j <= n; j++) {
+            const cost = a[i-1] === b[j-1] ? 0 : 1;
+            dp[i][j] = Math.min(
+              dp[i-1][j] + 1,
+              dp[i][j-1] + 1,
+              dp[i-1][j-1] + cost
+            );
+          }
+        }
+        return dp[m][n];
+      }
+
+      function fuzzyMatch(query, text) {
+        if (!query) return true;
+        text = text.toLowerCase();
+        const words = text.split(/[^a-z0-9]+/).filter(Boolean);
+        const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
+        return tokens.every(tok => {
+          if (text.includes(tok)) return true;
+          const thresh = tok.length <= 4 ? 1 : 2;
+          for (const w of words) {
+            if (Math.abs(w.length - tok.length) > thresh) continue;
+            if (editDistance(tok, w) <= thresh) return true;
+          }
+          return false;
+        });
+      }
+
+      // Debounce
+      function debounce(fn, ms) {
+        let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+      }
+
+      // Listeners
+      searchInput.addEventListener('input', debounce(() => {
+        state.q = searchInput.value.trim();
+        applyFilters();
+      }, 120));
+
+      priceSelect.addEventListener('change', () => {
+        state.price = priceSelect.value;
+        applyFilters();
+      });
+
+      ratingSelect.addEventListener('change', () => {
+        state.minRating = parseFloat(ratingSelect.value || '0');
+        applyFilters();
+      });
+
+      resetBtn.addEventListener('click', () => {
+        state.q = '';
+        state.price = '';
+        state.minRating = 0;
+
+        searchInput.value = '';
+        priceSelect.value = '';
+        ratingSelect.value = '0';
+        applyFilters();
+      });
+
+      function applyFilters() {
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const price = card.dataset.price;
+          const rating = parseFloat(card.dataset.rating);
+          const text = (
+            card.querySelector('h3').textContent + ' ' +
+            card.querySelector('p').textContent
+          ).toLowerCase();
+
+          const keywordOK = fuzzyMatch(state.q, text);
+          const priceOK = !state.price || price === state.price;
+          const ratingOK = rating >= state.minRating;
+
+          const show = keywordOK && priceOK && ratingOK;
+          card.style.display = show ? '' : 'none';
+          if (show) visibleCount++;
+        });
+
+        countEl.textContent = `${visibleCount} result${visibleCount === 1 ? '' : 's'}`;
+      }
+
+      // Initial count
+      applyFilters();
+    </script>
+  </body>
+</html>
