@@ -7,42 +7,127 @@
     <title>Food Reviews</title>
     <style>
       body {
-        background-color: #D2042D;
+        background-color: #A52A2A;
         font-family: Poppins, sans-serif;
         margin: 0;
+        padding: 0;
       }
       .container {
-        width: 700px;
-        display: flex;
-        flex-direction: column;
-        margin: 32px auto;
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
       }
-      .tabs { display: flex; gap: 20px; }
+      
+      /* Navigation styling */
+      .tabs {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px 40px;
+        margin-bottom: 30px;
+      }
       input { display: none; }
       label { cursor: pointer; }
       .tab-name {
         color: white;
-        height: 20px;
-        background: rgba(255, 255, 255, 0.25);
-        padding: 10px 30px;
-        border-radius: 5px;
-        transition: background 0.3s;
+        font-size: 28px;
+        font-weight: 300;
+        letter-spacing: 8px;
+        transition: all 0.3s;
+      }
+      .tab-name span {
         display: inline-block;
+        width: 45px;
+        height: 45px;
+        line-height: 45px;
+        text-align: center;
+        border: 2px solid white;
+        border-radius: 50%;
+        margin: 0 2px;
       }
-      #tab1:checked ~ .tabs label[for="tab1"] .tab-name,
-      #tab2:checked ~ .tabs label[for="tab2"] .tab-name {
-        background: rgb(243, 240, 58);
-        color: black;
+      #tab1:checked ~ .tabs label[for="tab1"] .tab-name span,
+      #tab2:checked ~ .tabs label[for="tab2"] .tab-name span,
+      #tab3:checked ~ .tabs label[for="tab3"] .tab-name span {
+        background: white;
+        color: #A52A2A;
       }
+
+      /* Home/Collage Layout */
+      .home-collage {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 30px;
+        align-items: center;
+        padding: 0 40px;
+      }
+      .collage-left, .collage-right {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+      .collage-center {
+        text-align: center;
+      }
+      .collage-img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      }
+      .logo-section {
+        margin: 20px 0;
+      }
+      .dog-img {
+        width: 300px;
+        height: 300px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      }
+      .logo-text {
+        color: white;
+        font-size: 72px;
+        font-weight: 300;
+        letter-spacing: 4px;
+        margin: 10px 0;
+      }
+      .logo-subtext {
+        color: white;
+        font-size: 64px;
+        font-weight: 300;
+        letter-spacing: 4px;
+        margin: 10px 0;
+      }
+      .lock-icon {
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        border: 3px solid white;
+        border-radius: 50%;
+        line-height: 60px;
+        text-align: center;
+        color: white;
+        font-size: 32px;
+        margin-left: 15px;
+        vertical-align: middle;
+      }
+
       .tab-contents {
         margin-top: 20px;
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
       }
       .tab-content { display: none; }
       #tab1:checked ~ .tab-contents #content1 { display: block; }
       #tab2:checked ~ .tab-contents #content2 { display: block; }
+      #tab3:checked ~ .tab-contents #content3 { display: block; }
+      
+      /* About page styling */
+      .about-content {
+        background: white;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px;
+        border-radius: 12px;
+      }
 
       .filters {
         display: grid;
@@ -52,9 +137,10 @@
         margin-bottom: 16px;
         position: sticky;
         top: 0;
-        background: white;
-        padding: 8px 0;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 16px;
         z-index: 1;
+        border-radius: 8px;
       }
       .filter-group { display: flex; flex-direction: column; gap: 6px; }
       .filter-label { font-size: 12px; color: #555; }
@@ -77,22 +163,29 @@
       .grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 14px;
+        gap: 20px;
+        padding: 0 20px;
       }
       .card {
+        background: white;
         border: 1px solid #eee;
         border-radius: 12px;
-        padding: 14px;
+        padding: 20px;
         transition: box-shadow .2s ease;
       }
       .card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
       .meta { display: flex; gap: 8px; align-items: center; font-size: 12px; color: #555; margin-bottom: 6px; }
       .pill { padding: 2px 8px; border: 1px solid #ddd; border-radius: 999px; }
 
+      @media (max-width: 1200px) {
+        .home-collage { grid-template-columns: 1fr; }
+        .tabs { flex-direction: column; gap: 15px; align-items: center; }
+      }
       @media (max-width: 720px) {
-        .container { width: 92vw; }
+        .container { padding: 10px; }
         .filters { grid-template-columns: 1fr 1fr; }
         .grid { grid-template-columns: 1fr; }
+        .logo-text, .logo-subtext { font-size: 48px; }
       }
     </style>
   </head>
@@ -101,29 +194,74 @@
       <!-- Hidden radios must come BEFORE the content they control -->
       <input type="radio" name="option" id="tab1" checked />
       <input type="radio" name="option" id="tab2" />
+      <input type="radio" name="option" id="tab3" />
 
       <!-- Tabs row (labels only) -->
       <div class="tabs">
-        <label for="tab1"><div class="tab-name">Home</div></label>
-        <label for="tab2"><div class="tab-name">Reviews</div></label>
+        <label for="tab1">
+          <div class="tab-name">
+            <span>h</span><span>o</span><span>m</span><span>e</span>
+          </div>
+        </label>
+        <label for="tab2">
+          <div class="tab-name">
+            <span>a</span><span>b</span><span>o</span><span>u</span><span>t</span>
+          </div>
+        </label>
+        <label for="tab3">
+          <div class="tab-name">
+            <span>r</span><span>e</span><span>v</span><span>i</span><span>e</span><span>w</span><span>s</span>
+          </div>
+        </label>
       </div>
 
       <!-- Contents -->
       <div class="tab-contents">
         <div class="tab-content" id="content1">
-          <h2>Welcome to my Website!</h2>
-          <h3>Here are the types of cuisines I enjoy</h3>
-          <ul>
-            <li>Thai</li>
-            <li>Indian</li>
-            <li>Mexican</li>
-          </ul>
-          <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3Vremh4ZmN3a2V5eDYyOWN2ZW9zcnZ0bHZhMG1ncTc2eWR1c2N0bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/97ZWlB7ENlalq/giphy.gif" width="300" height="300" alt="food gif">
-          <p>On my website I will be posting food reviews of restaurants I’ve been to!</p>
-          <p>I hope you enjoy my website :)</p>
+          <div class="home-collage">
+            <!-- Left Column -->
+            <div class="collage-left">
+              <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400" alt="Cooking" class="collage-img">
+              <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400" alt="Burgers" class="collage-img">
+            </div>
+            
+            <!-- Center Column -->
+            <div class="collage-center">
+              <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop" alt="White dog" class="dog-img">
+              <div class="logo-section">
+                <div class="logo-text">raiDawg</div>
+                <div class="logo-subtext">
+                  eatz
+                  <span class="lock-icon">🔒</span>
+                </div>
+              </div>
+              <img src="https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=500" alt="Pancakes" class="collage-img">
+            </div>
+            
+            <!-- Right Column -->
+            <div class="collage-right">
+              <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400" alt="Restaurant" class="collage-img">
+              <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400" alt="Food spread" class="collage-img">
+            </div>
+          </div>
         </div>
 
         <div class="tab-content" id="content2">
+          <div class="about-content">
+            <h2>Welcome to my Website!</h2>
+            <h3>Here are the types of cuisines I enjoy</h3>
+            <ul>
+              <li>Thai</li>
+              <li>Indian</li>
+              <li>Mexican</li>
+            </ul>
+            <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3Vremh4ZmN3a2V5eDYyOWN2ZW9zcnZ0bHZhMG1ncTc2eWR1c2N0bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/97ZWlB7ENlalq/giphy.gif" width="300" height="300" alt="food gif">
+            <p>On my website I will be posting food reviews of restaurants I've been to!</p>
+            <p>I hope you enjoy my website :)</p>
+          </div>
+        </div>
+
+        <div class="tab-content" id="content3">
           <!-- FILTER BAR -->
           <div class="filters">
             <!-- Search -->
@@ -175,16 +313,34 @@
               <div class="meta"><span class="pill">Korean</span><span>9/10</span></div>
               <h3>Pelicana Chicken | Rockville, MD</h3>
               <p>
-                I got the fried chicken which was soy garlic flavor, vegetable bibimbap, and rose tteokboki. The fried chicken was extremely crispy and the flavor was perfect. The bibimbap was pretty dull in comparison, it didn’t have much flavor. It came with a gochujang sauce on the side, but it really did not add much and the flavor wasn’t my favorite. The vegetables had no seasoning, which made dish boring to eat. The rose tteokboki was my favorite, the rice cakes were soft and slightly chewy (the perfect texture), the fish cakes didn’t have much of a taste, and the rose sauce was the perfect sweet and salty combo. I added cheese and ramen to the dish which really perfected it. The tteokboki was $18, fried chicken was $18, and the bibimbap was around $15. 
+                Pelicana has a very welcoming vibe when you enter the restaurant. As you walk in you see a small convenience store set up, where you can buy various ramens and Korean/Japanese snacks. A waiter comes to seat you at tables with metal chairs, which are kinda uncomfortable to be honest. I got the fried chicken which was soy garlic flavor, vegetable bibimbap, and rose tteokboki. The fried chicken was extremely crispy and the flavor was perfect. The bibimbap was pretty dull in comparison, it didn’t have much flavor. It came with a gochujang sauce on the side, but it really did not add much and the flavor wasn’t my favorite. The vegetables had no seasoning, which made dish boring to eat. The rose tteokboki was my favorite, the rice cakes were soft and slightly chewy (the perfect texture), the fish cakes didn’t have much of a taste, and the rose sauce was the perfect sweet and salty combo. I added cheese and ramen to the dish which really perfected it. The tteokboki was $18, fried chicken was $18, and the bibimbap was around $15. 
               </p>
             </article>
 
             <!-- Maki Review -->
-            <article class="card" data-cuisine="Japanese" data-price="$$" data-rating="9">
-              <div class="meta"><span class="pill">Japanese</span><span>8/10</span></div>
+            <article class="card" data-cuisine="Japanese" data-price="$" data-rating="9">
+              <div class="meta"><span class="pill">Japanese</span><span>9/10</span></div>
               <h3>Maki | Rockville, MD</h3>
               <p>
-                I got the chicken katsu curry which came with a miso soup and side salad. I’m not a huge fan of soup but the flavor was good for the soup. The side salad had a great dressing on it which made it refreshing to eat with the chicken katsu curry. Overall, the katsu was great, the curry was thick and loaded with carrots and potatoes which were extremely tender. The chicken was breaded and fried well, however, there was not much chicken, so the ratio of curry to chicken was off. The white rice served with the curry was perfect. It also came with radishes on the side which I picked off (not a fan of the sour taste). The whole meal was around $16.
+                Maki's a pretty small restaurant so you may get stuck waiting to get in. It was pretty cramped inside, but the service was fast and the food was so good you don't even care about it. I got the chicken katsu curry which came with a miso soup and side salad. I'm not a huge fan of soup but the flavor was good for the soup. The side salad had a great dressing on it which made it refreshing to eat with the chicken katsu curry. Overall, the katsu was great, the curry was thick and loaded with carrots and potatoes which were extremely tender. The chicken was breaded and fried well, however, there was not much chicken, so the ratio of curry to chicken was off. The white rice served with the curry was perfect. It also came with radishes on the side which I picked off (not a fan of the sour taste). The whole meal was around $16, which is pretty affordable. 
+              </p>
+            </article>
+            
+            <!-- Iron Age Review -->
+            <article class="card" data-cuisine="Korean" data-price="$$" data-rating="5">
+              <div class="meta"><span class="pill">Korean</span><span>5/10</span></div>
+              <h3>Iron Age | Catonsville, MD</h3>
+              <p>
+                Iron Age is a low dimmed type of restaurant, which isn't my favorite. When you walk and seated you're smacked in the face with large TV's that are constantly blasting K-pop music. Since it's an all you can eat place I got a variety of meats to try out. Firstly, I tried the Hawaiian bulgogi and the beef bulgogi. The Hawaiian bulgogi was probably my favorite thing I ate there, it was juicy and the flavors were great. You can definetly taste the pineapple in the marinade and it added to the juiciness of the meat. The beef bulgogi was alright, nothing special about it. Afterwards, I tried the top blade steak which I didn't enjoy much at all, as there was no flavor to it. Lastly, I tried the beef brisket which had a very light smoky flavor to it. For side dishes, I tried the white rice, tteokboki, salad, and japchae. The tteokboki was served cold which I didn't like much. However, the salad and japchae were great to eat with the meats. It was $35 per person, and even though it was all you can eat I found the price unreasonable. 
+              </p>
+            </article>
+            
+            <!-- Seoul Sushi Pub Review -->
+            <article class="card" data-cuisine="Korean" data-price="$$" data-rating="8">
+              <div class="meta"><span class="pill">Korean</span><span>8/10</span></div>
+              <h3>Seoul Pub Sushi Chicken & Beer | Ellicott City, MD</h3>
+              <p>
+               Seoul Pub (shortening it because the whole name is way too long) is a small restaurant kinda placed in a weird area, so I never paid it much attention. The service was great and the food came out pretty fast and felt very authetntic. I ordered the tofu japchae, sweet and spicy fried chicken, and the vegetable paejon (korean pancake dish). The japchae was perfectly cooked and was accompanied with a lot of vegetables and tofu which were yummy. The fried chicken was great as well, it came in really small pieces with the bone-in. It was perfectly crispy and not too saucy, which is what I typically enjoy. Lastly, the vegetable paejon was alright. It had a slightly bitter taste for some reason and not much flavor, felt like it lacked salt or something. The japchae was around $20, fried chicken was $25, and the paejon was $13. Overall, the experience, quality of the food, and price was pretty solid. 
               </p>
             </article>
 
